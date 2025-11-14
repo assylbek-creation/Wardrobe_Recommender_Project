@@ -1,0 +1,95 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IDE - VSCode, PyCharm, etc.
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Project Specific - Large Feature Files (300+ MB)
+extracted_features/
+!extracted_features/.gitkeep
+
+# Project Specific - Generated Files
+dataset_config.json
+preprocessing_example.png
+resnet50_model_info.json
+
+# EDA Visualizations (can be regenerated)
+eda_visuals/
+!eda_visuals/.gitkeep
+
+# Logs
+*.log
+
+# Machine Learning Models & Checkpoints
+*.h5
+*.hdf5
+*.pkl
+*.pth
+*.pt
+*.ckpt
+*.pb
+*.tflite
+
+# Data files (if you download dataset locally)
+data/
+datasets/
+*.csv.gz
+*.zip
+*.tar.gz
+
+# NumPy arrays (large feature files)
+*.npy
+!extracted_features/.gitkeep
+
+# Test files
+.pytest_cache/
+.coverage
+htmlcov/
+
