@@ -51,11 +51,12 @@ venv.bak/
 ehthumbs.db
 Thumbs.db
 
-# Project Specific - Large Feature Files (300+ MB)
-extracted_features/
-!extracted_features/.gitkeep
+# Project Specific - Large Feature Files (>100MB, GitHub limit)
+# Only exclude large .npy files
+extracted_features/resnet50_features.npy
+extracted_features/resnet50_features_normalized.npy
 
-# Project Specific - Generated Files
+# Project Specific - Generated Files (local paths)
 dataset_config.json
 preprocessing_example.png
 resnet50_model_info.json
@@ -71,6 +72,7 @@ eda_visuals/
 *.h5
 *.hdf5
 *.pkl
+!extracted_features/*.pkl
 *.pth
 *.pt
 *.ckpt
@@ -84,9 +86,8 @@ datasets/
 *.zip
 *.tar.gz
 
-# NumPy arrays (large feature files)
-*.npy
-!extracted_features/.gitkeep
+# Large .npy files are excluded above
+# Smaller files in extracted_features are included
 
 # Test files
 .pytest_cache/

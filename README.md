@@ -6,11 +6,9 @@ This project builds a fashion recommendation system that analyzes clothing image
 
 ---
 
-## 👤 My Part: CNN Feature Extraction
+## 🔬 CNN Feature Extraction Module
 
-**Responsible for:** Extracting high-dimensional feature vectors from clothing images using pre-trained CNNs.
-
-### What Was Implemented
+### Implementation
 
 1. **Feature Extraction Pipeline**
    - Used **ResNet50** (pre-trained on ImageNet) for feature extraction
@@ -28,81 +26,22 @@ This project builds a fashion recommendation system that analyzes clothing image
 
 ---
 
-## 📦 Output Files for Team (in `extracted_features/`)
+## 📦 Extracted Features
 
-### Ready-to-use files:
-- **`resnet50_features_normalized.npy`** - (41802, 2048) L2-normalized vectors for cosine similarity
-- **`resnet50_features_pca512.npy`** - (41802, 512) PCA-reduced vectors for faster computation
+Pre-extracted features are available in the `extracted_features/` folder:
+
+### Available in repository:
+- **`resnet50_features_pca512.npy`** - (41802, 512) PCA-reduced features
 - **`resnet50_metadata.csv`** - Image metadata (ID, category, color, gender, etc.)
-- **`resnet50_extraction_info.json`** - Extraction statistics
-- **`resnet50_pca512_info.json`** - PCA information (variance explained, etc.)
+- **`resnet50_pca512_model.pkl`** - PCA model for new images
+- **`resnet50_pca512_info.json`** - PCA statistics (94.25% variance retained)
+- **`validation/`** - Feature quality validation results
 
----
+### Large files (not in repo, contact team):
+- **`resnet50_features_normalized.npy`** - (41802, 2048) Full L2-normalized features
+- **`resnet50_features.npy`** - (41802, 2048) Original features
 
-## 🚀 Quick Start for Team Members
-
-### 1. Load the Features
-
-```python
-import numpy as np
-import pandas as pd
-import json
-
-# Load feature vectors
-features = np.load('extracted_features/resnet50_features_normalized.npy')
-# OR for faster processing:
-# features = np.load('extracted_features/resnet50_features_pca512.npy')
-
-# Load metadata
-metadata = pd.read_csv('extracted_features/resnet50_metadata.csv')
-
-print(f"Features shape: {features.shape}")  # (41802, 2048) or (41802, 512)
-print(f"Total images: {len(metadata)}")
-```
-
-### 2. KNN - Find Similar Items
-
-```python
-from sklearn.metrics.pairwise import cosine_similarity
-
-# Query image (by index)
-query_idx = 0
-query_vector = features[query_idx:query_idx+1]
-
-# Calculate similarity with all images
-similarities = cosine_similarity(query_vector, features)[0]
-
-# Get top-5 most similar (excluding query itself)
-top_k = 5
-top_indices = np.argsort(similarities)[::-1][1:top_k+1]
-
-# Get recommendations
-recommendations = metadata.iloc[top_indices]
-print(recommendations[['id', 'articleType', 'baseColour']])
-print(f"Similarities: {similarities[top_indices]}")
-```
-
-### 3. Clustering - Group by Style
-
-```python
-from sklearn.cluster import KMeans
-
-# Use PCA version for speed
-features_pca = np.load('extracted_features/resnet50_features_pca512.npy')
-
-# K-Means clustering
-kmeans = KMeans(n_clusters=10, random_state=42)
-clusters = kmeans.fit_predict(features_pca)
-
-# Add cluster labels to metadata
-metadata['cluster'] = clusters
-
-# Analyze clusters
-for i in range(10):
-    cluster_items = metadata[metadata['cluster'] == i]
-    print(f"\nCluster {i}: {len(cluster_items)} items")
-    print(cluster_items['articleType'].value_counts().head(3))
-```
+See `extracted_features/README.md` for details.
 
 ---
 
@@ -123,65 +62,27 @@ for i in range(10):
 ```
 ML_Wardrobe_Recommender_Project/
 │
-├── CNN Module (My Implementation):
+├── CNN Feature Extraction:
 │   ├── load_data.py                # Data loading from Kaggle
 │   ├── clean_data.py               # Data cleaning
+│   ├── eda.py                      # Exploratory data analysis
 │   ├── image_loader.py             # Image preprocessing
 │   ├── cnn_model.py                # ResNet50 feature extractor
 │   ├── extract_all_features.py     # Batch feature extraction
 │   ├── postprocess_features.py     # Normalization & PCA
 │   ├── validate_features.py        # Quality validation
-│   └── feature_extraction_api.py   # API for team (optional)
+│   └── feature_extraction_api.py   # API for advanced usage
 │
-├── eda_visuals/                    # Exploratory data analysis
-├── dataset_config.json             # Dataset paths
+├── extracted_features/             # Pre-extracted features
+│   ├── README.md                   # Feature files documentation
+│   ├── resnet50_features_pca512.npy
+│   ├── resnet50_metadata.csv
+│   └── validation/                 # Quality validation results
+│
+├── eda_visuals/                    # EDA visualizations
 ├── requirements.txt                # Python dependencies
 └── README.md                       # This file
 ```
-
----
-
-## 🔧 Using the API (Optional)
-
-For advanced usage, you can use the provided API:
-
-```python
-from feature_extraction_api import FeatureExtractionAPI
-
-# Initialize API
-api = FeatureExtractionAPI()
-
-# Get features for specific IDs
-features = api.get_features_by_ids([15970, 39386, 59263])
-
-# Get all items in a category
-shirt_features, shirt_ids, shirt_meta = api.get_features_by_category('Shirts')
-
-# Extract features from a new image
-new_features = api.extract_features_from_new_image(
-    image_id=12345,
-    apply_normalization=True
-)
-```
-
----
-
-## 💡 Recommendations for Team
-
-### For KNN Implementation:
-- Use `resnet50_features_normalized.npy` with cosine similarity
-- Metric: `sklearn.metrics.pairwise.cosine_similarity`
-- Expected precision@5: ~70-80% for same category
-
-### For Clustering:
-- Use `resnet50_features_pca512.npy` for faster computation
-- Try K-Means, Hierarchical, or DBSCAN
-- Use `articleType` or `masterCategory` for validation
-
-### For Visualization:
-- Apply t-SNE or UMAP on PCA features
-- Color by category to validate clustering quality
-- See examples in `extracted_features/validation/`
 
 ---
 
@@ -211,21 +112,25 @@ pip install -r requirements.txt
 
 ---
 
-## ✅ Next Steps for Team
+## 🚀 Usage Example
 
-1. **KNN Team:** Implement similarity search using `extracted_features/resnet50_features_normalized.npy`
-2. **Clustering Team:** Perform style classification using `extracted_features/resnet50_features_pca512.npy`
-3. **Integration:** Combine CNN features with KNN and clustering for final recommendation system
+```python
+import numpy as np
+import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
 
----
+# Load PCA features and metadata
+features = np.load('extracted_features/resnet50_features_pca512.npy')
+metadata = pd.read_csv('extracted_features/resnet50_metadata.csv')
 
-## 📁 Quick File Reference
+# Find similar items
+query_idx = 0
+query_vector = features[query_idx:query_idx+1]
+similarities = cosine_similarity(query_vector, features)[0]
+top_5 = np.argsort(similarities)[::-1][1:6]
 
-| File | Size | Purpose |
-|------|------|---------|
-| `resnet50_features_normalized.npy` | 327 MB | **Best for KNN** - L2 normalized, use with cosine similarity |
-| `resnet50_features_pca512.npy` | 82 MB | **Best for Clustering** - Fast, 94% variance retained |
-| `resnet50_metadata.csv` | 4 MB | Image metadata - links features to categories |
-| `resnet50_pca512_model.pkl` | 4 MB | PCA model - for transforming new images |
+# Show results
+print(metadata.iloc[top_5][['id', 'articleType', 'baseColour']])
+```
 
-**Good luck! 🚀**
+**For more examples, see code comments in each module.**
